@@ -1,0 +1,69 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract SimpleTimelock {
+    address public owner;
+    uint256 public unlockTime;
+    uint256 public lockedAmount;
+    bool public fundsWithdrawn;
+    
+    event FundsLocked(uint256 amount, uint256 unlockTime);
+    event FundsWithdrawn(uint256 amount, address recipient);
+    
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+    
+    modifier canWithdraw() {
+        require(block.timestamp >= unlockTime, "Funds are still locked");
+        require(!fundsWithdrawn, "Funds already withdrawn");
+        require(lockedAmount > 0, "No funds to withdraw");
+        _;
+    }
+    
+    constructor(uint256 _lockDuration) {
+        owner = msg.sender;
+        unlockTime = block.timestamp + _lockDuration;
+        fundsWithdrawn = false;
+    }
+    
+    // Lock funds by sending ETH to this contract
+    function lockFunds() external payable onlyOwner {
+        require(msg.value > 0, "Must send some ETH to lock");
+        require(lockedAmount == 0, "Funds already locked");
+        
+        lockedAmount = msg.value;
+        emit FundsLocked(msg.value, unlockTime);
+    }
+    
+    // Withdraw funds after unlock time
+    function withdraw() external onlyOwner canWithdraw {
+        uint256 amount = lockedAmount;
+        fundsWithdrawn = true;
+        lockedAmount = 0;
+        
+        (bool success, ) = payable(owner).call{value: amount}("");
+        require(success, "Transfer failed");
+        
+        emit FundsWithdrawn(amount, owner);
+    }
+    
+    // Check how much time is left until unlock
+    function timeUntilUnlock() external view returns (uint256) {
+        if (block.timestamp >= unlockTime) {
+            return 0;
+        }
+        return unlockTime - block.timestamp;
+    }
+    
+    // Check contract balance
+    function getBalance() external view returns (uint256) {
+        return address(this).balance;
+    }
+    
+    // Check if funds can be withdrawn
+    function canWithdrawNow() external view returns (bool) {
+        return block.timestamp >= unlockTime && !fundsWithdrawn && lockedAmount > 0;
+    }
+}
