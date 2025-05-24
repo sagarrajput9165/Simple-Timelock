@@ -1,0 +1,103 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/**
+ * @title Simple Timelock
+ * @dev A smart contract that locks funds for a specified duration
+ * @author Simple Timelock Team
+ */
+contract Project {
+    address public owner;
+    uint256 public unlockTime;
+    uint256 public lockedAmount;
+    bool public fundsWithdrawn;
+    
+    event FundsLocked(address indexed owner, uint256 amount, uint256 unlockTime);
+    event FundsWithdrawn(address indexed owner, uint256 amount);
+    event TimelockExtended(uint256 newUnlockTime);
+    
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+    
+    modifier canWithdraw() {
+        require(block.timestamp >= unlockTime, "Funds are still locked");
+        require(!fundsWithdrawn, "Funds already withdrawn");
+        require(lockedAmount > 0, "No funds to withdraw");
+        _;
+    }
+    
+    constructor(uint256 _lockDuration) {
+        require(_lockDuration > 0, "Lock duration must be greater than 0");
+        owner = msg.sender;
+        unlockTime = block.timestamp + _lockDuration;
+        fundsWithdrawn = false;
+    }
+    
+    /**
+     * @dev Lock funds by sending ETH to this contract
+     * Core Function 1: Locking mechanism
+     */
+    function lockFunds() external payable onlyOwner {
+        require(msg.value > 0, "Must send some ETH to lock");
+        require(lockedAmount == 0, "Funds already locked");
+        
+        lockedAmount = msg.value;
+        emit FundsLocked(owner, msg.value, unlockTime);
+    }
+    
+    /**
+     * @dev Withdraw funds after unlock time expires
+     * Core Function 2: Withdrawal mechanism
+     */
+    function withdraw() external onlyOwner canWithdraw {
+        uint256 amount = lockedAmount;
+        fundsWithdrawn = true;
+        lockedAmount = 0;
+        
+        (bool success, ) = payable(owner).call{value: amount}("");
+        require(success, "Transfer failed");
+        
+        emit FundsWithdrawn(owner, amount);
+    }
+    
+    /**
+     * @dev Extend the lock time (can only increase, not decrease)
+     * Core Function 3: Time extension mechanism
+     */
+    function extendLockTime(uint256 _additionalTime) external onlyOwner {
+        require(_additionalTime > 0, "Additional time must be greater than 0");
+        require(!fundsWithdrawn, "Cannot extend after withdrawal");
+        require(lockedAmount > 0, "No funds locked");
+        
+        unlockTime += _additionalTime;
+        emit TimelockExtended(unlockTime);
+    }
+    
+    // View functions
+    function timeUntilUnlock() external view returns (uint256) {
+        if (block.timestamp >= unlockTime) {
+            return 0;
+        }
+        return unlockTime - block.timestamp;
+    }
+    
+    function getBalance() external view returns (uint256) {
+        return address(this).balance;
+    }
+    
+    function canWithdrawNow() external view returns (bool) {
+        return block.timestamp >= unlockTime && !fundsWithdrawn && lockedAmount > 0;
+    }
+    
+    function getContractInfo() external view returns (
+        address contractOwner,
+        uint256 lockEndTime,
+        uint256 locked,
+        bool withdrawn,
+        uint256 currentTime
+    ) {
+        return (owner, unlockTime, lockedAmount, fundsWithdrawn, block.timestamp);
+    }
+}
