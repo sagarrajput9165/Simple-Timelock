@@ -60,7 +60,7 @@ contract Project {
         require(success, "Transfer failed");
         
         emit FundsWithdrawn(owner, amount);
-    }
+
     
     /**
      * @dev Extend the lock time (can only increase, not decrease)
