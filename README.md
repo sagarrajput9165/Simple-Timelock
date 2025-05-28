@@ -1,13 +1,3 @@
-## Things you need to do:
-
-- Project.sol file - Rename this file and add the solidity code inside it.
-- deploy.js file - Add the deploy.js (javascript) code inside it.
-- .env.example - Add the Private Key of your MetaMask Wallet's account.
-- Readme.md file - Add the Readme content inside this file.
-- package.json file – Replace the `"name"` property value from `"Project-Title"` to your actual project title. <br/>
-*Example:* `"name": "crowdfunding-smartcontract"`
-markdown# Simple Timelock
-
 ## Project Description
 
 Simple Timelock is a smart contract solution designed to provide time-based access control for digital assets. The contract allows users to lock their funds for a predetermined period, ensuring that the assets cannot be accessed until the specified unlock time has passed. This creates a trustless escrow mechanism that operates entirely on-chain without requiring third-party intervention.
