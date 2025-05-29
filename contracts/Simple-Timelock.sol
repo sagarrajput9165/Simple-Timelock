@@ -15,7 +15,7 @@ contract Project {
     event FundsLocked(address indexed owner, uint256 amount, uint256 unlockTime);
     event FundsWithdrawn(address indexed owner, uint256 amount);
     event TimelockExtended(uint256 newUnlockTime)
-    modifier onlyOwner() {
+    modifier onlyOwner()
         require(msg.sender == owner, "Only owner can call this function");
         _;
     }
