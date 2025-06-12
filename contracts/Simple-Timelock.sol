@@ -12,7 +12,7 @@ contract Project {
     uint256 public lockedAmount;
     bool public fundsWithdrawn;
     
-    event FundsLocked(address indexed owner, uint256 amount, uint256 unlockTime);
+    event FundsLocked(address indexed owner, uint256 amount, uint256 unlockTim
     event FundsWithdrawn(address indexed owner, uint256 amount);
     event TimelockExtended(uint256 newUnlockTime)
     modifier onlyOwner()
