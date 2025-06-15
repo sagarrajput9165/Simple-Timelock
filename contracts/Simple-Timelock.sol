@@ -27,19 +27,6 @@ contract Project {\
         _;
     }
     
-    constructor(uint256 _lockDuration) {
-        require(_lockDuration > 0, "Lock duration must be greater than 0");
-        owner = msg.sender;
-        unlockTime = block.timestamp + _lockDuration;
-        fundsWithdrawn = false;
-    }
-    
-    /**
-     * @dev Lock funds by sending ETH to this contract
-     * Core Function 1: Locking mechanism
-     */
-    function lockFunds() external payable onlyOwner {
-        require(msg.value > 0, "Must send some ETH to lock");
         require(lockedAmount == 0, "Funds already locked");
         
         lockedAmount = msg.value;
