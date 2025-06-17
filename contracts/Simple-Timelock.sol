@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 /**
  * @title Simple Timelock
  * @dev A smart contract that locks funds for a specified duration
- * @author Simple Timelock Team
+ * @authorTimelock Team
  */
 contract Project {\
     address public owner;
