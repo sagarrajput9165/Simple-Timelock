@@ -1,11 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-
-/**
- * @title Simple Timelock
- * @dev A smart contract that locks funds for a specified duration
- * @authorTimelock Team
- */
 contract Project {\
     address public owner;
     uint256 public unlockTime;
