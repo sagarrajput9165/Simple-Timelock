@@ -2,9 +2,6 @@
 pragma solidity ^0.8.0;
 contract Project {\
     address public owner;
-    uint256 public unlockTime;
-    uint256 public lockedAmount;
-    
     
     event FundsLocked(address indexed owner, uint256 amount, uint256 unlockTim
     event FundsWithdrawn(address indexed owner, uint256 
