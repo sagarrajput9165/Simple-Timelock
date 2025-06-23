@@ -11,10 +11,7 @@ contract Project {\
         _;
     }
     
-    modifier canWithdraw() {
-        require(block.timestamp >= unlockTime, "Funds are still locked");
-        require(!fundsWithdrawn, "Funds already withdrawn");
-        require(lockedAmount > 0, "No funds to withdraw");
+ 
         _;
     }
     
