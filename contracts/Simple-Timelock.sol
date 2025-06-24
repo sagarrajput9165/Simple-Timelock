@@ -7,11 +7,7 @@ contract Project {\
     event FundsWithdrawn(address indexed owner, uint256 
     event TimelockExtended(uint256 newUnlockTime)
     modifier onlyOwner()
-        require(msg.sender == owner, "Only owner can call this function");
-        _;
-    }
-    
- 
+        require(msg.sender == owner
         _;
     }
     
@@ -63,14 +59,7 @@ contract Project {\
     
     function canWithdrawNow() external view returns (bool) {
         return block.timestamp >= unlockTime && !fundsWithdrawn && lockedAmount > 0;
-    }
-    
-    function getContractInfo() external view returns (
-        address contractOwner,
-        uint256 lockEndTime,
-        uint256 locked,
-        bool withdrawn,
-        uint256 currentTime
+
     ) {
         return (owner, unlockTime, lockedAmount, fundsWithdrawn, block.timestamp);
     }
